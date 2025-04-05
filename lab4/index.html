@@ -3,18 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sorting Algorithms</title>
+    <title>Sorting Algorithms Demo</title>
     <script src="sortingLibrary.js"></script>
 </head>
 <body>
     <h1>Sorting Algorithms Demo</h1>
+    
+    <h2>Test with a non-sparse array:</h2>
     <script>
-        let arr = [12, 5, 8, 3, 20, 17, 7, 13];
+        let arr = [12, 5, 8, 3, 20, 17, 7, 13, 1, 11, 6, 2, 4, 18, 9, 10, 14, 15, 16, 19];
+        console.log("Original Array:", arr);
+        
         bubbleSort([...arr]);
         selectionSort([...arr]);
         insertionSort([...arr]);
         shellSort([...arr]);
         quickSort([...arr]);
     </script>
+
+    <h2>Test with a sparse array:</h2>
+    <script>
+        let sparseArr = [12, 5, 8, 3, , 17, 7, , 1, 11, 6, , 4, , 9, 10, 14, 15, , 16, 19];
+        console.log("Original Sparse Array:", sparseArr);
+        
+        bubbleSort([...sparseArr]);
+        selectionSort([...sparseArr]);
+        insertionSort([...sparseArr]);
+        shellSort([...sparseArr]);
+        quickSort([...sparseArr]);
+    </script>
+
 </body>
 </html>
