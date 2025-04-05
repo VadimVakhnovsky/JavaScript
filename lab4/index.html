@@ -1,41 +1,20 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Демонстрація сортування</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Algorithms</title>
     <script src="sortingLibrary.js"></script>
 </head>
 <body>
-    <h1>Демонстрація роботи бібліотеки сортування</h1>
+    <h1>Sorting Algorithms Demo</h1>
     <script>
-        function generateArray(length, sparse = false) {
-            const arr = [];
-            for (let i = 0; i < length; i++) {
-                if (sparse && Math.random() < 0.1) {
-                    arr.push(undefined);
-                } else {
-                    arr.push(Math.floor(Math.random() * 1000));
-                }
-            }
-            return arr;
-        }
-
-        const normalArray = generateArray(100);
-        const sparseArray = generateArray(100, true);
-
-        document.write("<h2>Звичайний масив</h2>");
-        SortingLib.bubbleSort([...normalArray]);
-        SortingLib.selectionSort([...normalArray]);
-        SortingLib.insertionSort([...normalArray]);
-        SortingLib.shellSort([...normalArray]);
-        SortingLib.quickSort([...normalArray]);
-
-        document.write("<h2>Розріджений масив</h2>");
-        SortingLib.bubbleSort([...sparseArray]);
-        SortingLib.selectionSort([...sparseArray]);
-        SortingLib.insertionSort([...sparseArray]);
-        SortingLib.shellSort([...sparseArray]);
-        SortingLib.quickSort([...sparseArray]);
+        let arr = [12, 5, 8, 3, 20, 17, 7, 13];
+        bubbleSort([...arr]);
+        selectionSort([...arr]);
+        insertionSort([...arr]);
+        shellSort([...arr]);
+        quickSort([...arr]);
     </script>
 </body>
 </html>
