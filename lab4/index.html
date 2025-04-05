@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Демонстрація сортування</title>
+    <script src="sortingLibrary.js"></script>
+</head>
+<body>
+    <h1>Демонстрація роботи бібліотеки сортування</h1>
+    <script>
+        function generateArray(length, sparse = false) {
+            const arr = [];
+            for (let i = 0; i < length; i++) {
+                if (sparse && Math.random() < 0.1) {
+                    arr.push(undefined);
+                } else {
+                    arr.push(Math.floor(Math.random() * 1000));
+                }
+            }
+            return arr;
+        }
+
+        const normalArray = generateArray(100);
+        const sparseArray = generateArray(100, true);
+
+        document.write("<h2>Звичайний масив</h2>");
+        SortingLib.bubbleSort([...normalArray]);
+        SortingLib.selectionSort([...normalArray]);
+        SortingLib.insertionSort([...normalArray]);
+        SortingLib.shellSort([...normalArray]);
+        SortingLib.quickSort([...normalArray]);
+
+        document.write("<h2>Розріджений масив</h2>");
+        SortingLib.bubbleSort([...sparseArray]);
+        SortingLib.selectionSort([...sparseArray]);
+        SortingLib.insertionSort([...sparseArray]);
+        SortingLib.shellSort([...sparseArray]);
+        SortingLib.quickSort([...sparseArray]);
+    </script>
+</body>
+</html>
