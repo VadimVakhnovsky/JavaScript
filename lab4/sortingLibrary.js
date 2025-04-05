@@ -1,143 +1,151 @@
 const SortingLib = (() => {
-    const logStats = (name, comparisons, swaps, undefinedCount) => {
-        const message = `${name} — Порівнянь: ${comparisons}, Обмінів/Переміщень: ${swaps}`;
-        console.log(message);
-        if (undefinedCount > 0) {
-            console.warn(`${name}: У масиві знайдено ${undefinedCount} undefined-елемент(ів)`);
+    function logStats(name, comparisons, swaps, sparseFound) {
+        console.log(`${name}: порівнянь = ${comparisons}, обмінів/переміщень = ${swaps}`);
+        if (sparseFound) {
+            console.warn(`${name}: У масиві були undefined-елементи`);
         }
-        const output = document.createElement('p');
-        output.textContent = message;
-        document.body.appendChild(output);
-    };
+    }
 
-    const compare = (a, b, ascending) => ascending ? a > b : a < b;
-
-    const cleanArray = (arr) => {
-        let undefinedCount = 0;
-        const clean = arr.map((v) => {
-            if (typeof v === 'undefined') {
-                undefinedCount++;
-                return Number.NaN; // Позначаємо undefined
+    function handleSparse(array) {
+        let sparseFound = false;
+        const cleanArray = array.map((v) => {
+            if (v === undefined) {
+                sparseFound = true;
+                return Infinity; // або -Infinity залежно від напрямку сортування
             }
             return v;
         });
-        return [clean, undefinedCount];
-    };
+        return { cleanArray, sparseFound };
+    }
 
-    const bubbleSort = (arr, ascending = true) => {
-        let [a, undefinedCount] = cleanArray([...arr]);
+    function bubbleSort(array, ascending = true) {
         let comparisons = 0, swaps = 0;
+        const { cleanArray, sparseFound } = handleSparse(array);
+        const len = cleanArray.length;
 
-        for (let i = 0; i < a.length - 1; i++) {
-            for (let j = 0; j < a.length - i - 1; j++) {
-                if (isNaN(a[j]) || isNaN(a[j + 1])) continue;
+        for (let i = 0; i < len - 1; i++) {
+            for (let j = 0; j < len - 1 - i; j++) {
                 comparisons++;
-                if (compare(a[j], a[j + 1], ascending)) {
-                    [a[j], a[j + 1]] = [a[j + 1], a[j]];
+                if ((ascending && cleanArray[j] > cleanArray[j + 1]) ||
+                    (!ascending && cleanArray[j] < cleanArray[j + 1])) {
+                    [cleanArray[j], cleanArray[j + 1]] = [cleanArray[j + 1], cleanArray[j]];
                     swaps++;
                 }
             }
         }
 
-        logStats("Bubble Sort", comparisons, swaps, undefinedCount);
-        return a;
-    };
+        logStats("Bubble Sort", comparisons, swaps, sparseFound);
+        return cleanArray;
+    }
 
-    const selectionSort = (arr, ascending = true) => {
-        let [a, undefinedCount] = cleanArray([...arr]);
+    function selectionSort(array, ascending = true) {
         let comparisons = 0, swaps = 0;
+        const { cleanArray, sparseFound } = handleSparse(array);
+        const len = cleanArray.length;
 
-        for (let i = 0; i < a.length; i++) {
-            if (isNaN(a[i])) continue;
-            let minIdx = i;
-            for (let j = i + 1; j < a.length; j++) {
-                if (isNaN(a[j])) continue;
+        for (let i = 0; i < len - 1; i++) {
+            let idx = i;
+            for (let j = i + 1; j < len; j++) {
                 comparisons++;
-                if (compare(a[minIdx], a[j], ascending)) {
-                    minIdx = j;
+                if ((ascending && cleanArray[j] < cleanArray[idx]) ||
+                    (!ascending && cleanArray[j] > cleanArray[idx])) {
+                    idx = j;
                 }
             }
-            if (minIdx !== i) {
-                [a[i], a[minIdx]] = [a[minIdx], a[i]];
+            if (i !== idx) {
+                [cleanArray[i], cleanArray[idx]] = [cleanArray[idx], cleanArray[i]];
                 swaps++;
             }
         }
 
-        logStats("Selection Sort", comparisons, swaps, undefinedCount);
-        return a;
-    };
+        logStats("Selection Sort", comparisons, swaps, sparseFound);
+        return cleanArray;
+    }
 
-    const insertionSort = (arr, ascending = true) => {
-        let [a, undefinedCount] = cleanArray([...arr]);
+    function insertionSort(array, ascending = true) {
         let comparisons = 0, swaps = 0;
+        const { cleanArray, sparseFound } = handleSparse(array);
+        const len = cleanArray.length;
 
-        for (let i = 1; i < a.length; i++) {
-            let key = a[i];
-            if (isNaN(key)) continue;
+        for (let i = 1; i < len; i++) {
+            let key = cleanArray[i];
             let j = i - 1;
-            while (j >= 0 && !isNaN(a[j]) && compare(a[j], key, ascending)) {
-                a[j + 1] = a[j];
+
+            while (j >= 0 && ((ascending && cleanArray[j] > key) || (!ascending && cleanArray[j] < key))) {
                 comparisons++;
+                cleanArray[j + 1] = cleanArray[j];
                 swaps++;
                 j--;
             }
-            a[j + 1] = key;
+            comparisons++;
+            cleanArray[j + 1] = key;
             swaps++;
         }
 
-        logStats("Insertion Sort", comparisons, swaps, undefinedCount);
-        return a;
-    };
+        logStats("Insertion Sort", comparisons, swaps, sparseFound);
+        return cleanArray;
+    }
 
-    const shellSort = (arr, ascending = true) => {
-        let [a, undefinedCount] = cleanArray([...arr]);
+    function shellSort(array, ascending = true) {
         let comparisons = 0, swaps = 0;
+        const { cleanArray, sparseFound } = handleSparse(array);
+        const len = cleanArray.length;
 
-        for (let gap = Math.floor(a.length / 2); gap > 0; gap = Math.floor(gap / 2)) {
-            for (let i = gap; i < a.length; i++) {
-                let temp = a[i];
-                if (isNaN(temp)) continue;
-                let j;
-                for (j = i; j >= gap && !isNaN(a[j - gap]) && compare(a[j - gap], temp, ascending); j -= gap) {
-                    a[j] = a[j - gap];
+        let gap = Math.floor(len / 2);
+        while (gap > 0) {
+            for (let i = gap; i < len; i++) {
+                let temp = cleanArray[i];
+                let j = i;
+                while (j >= gap && ((ascending && cleanArray[j - gap] > temp) || (!ascending && cleanArray[j - gap] < temp))) {
                     comparisons++;
+                    cleanArray[j] = cleanArray[j - gap];
                     swaps++;
+                    j -= gap;
                 }
-                a[j] = temp;
+                comparisons++;
+                cleanArray[j] = temp;
                 swaps++;
             }
+            gap = Math.floor(gap / 2);
         }
 
-        logStats("Shell Sort", comparisons, swaps, undefinedCount);
-        return a;
-    };
+        logStats("Shell Sort", comparisons, swaps, sparseFound);
+        return cleanArray;
+    }
 
-    const quickSort = (arr, ascending = true) => {
-        let [a, undefinedCount] = cleanArray([...arr]);
+    function quickSort(array, ascending = true) {
         let comparisons = 0, swaps = 0;
+        const { cleanArray, sparseFound } = handleSparse(array);
 
-        function quicksortRecursive(a) {
-            if (a.length < 2) return a;
-            let pivot = a[0];
-            let left = [], right = [];
+        function partition(arr, low, high) {
+            const pivot = arr[high];
+            let i = low - 1;
 
-            for (let i = 1; i < a.length; i++) {
-                if (isNaN(a[i])) continue;
+            for (let j = low; j < high; j++) {
                 comparisons++;
-                if (compare(pivot, a[i], ascending)) {
-                    left.push(a[i]);
-                } else {
-                    right.push(a[i]);
+                if ((ascending && arr[j] < pivot) || (!ascending && arr[j] > pivot)) {
+                    i++;
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                    swaps++;
                 }
             }
-            swaps += a.length;
-            return [...quicksortRecursive(left), pivot, ...quicksortRecursive(right)];
+            [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+            swaps++;
+            return i + 1;
         }
 
-        let sorted = quicksortRecursive(a.filter(x => !isNaN(x)));
-        logStats("Quick Sort", comparisons, swaps, undefinedCount);
-        return sorted;
-    };
+        function quickSortRecursive(arr, low, high) {
+            if (low < high) {
+                let pi = partition(arr, low, high);
+                quickSortRecursive(arr, low, pi - 1);
+                quickSortRecursive(arr, pi + 1, high);
+            }
+        }
+
+        quickSortRecursive(cleanArray, 0, cleanArray.length - 1);
+        logStats("Quick Sort", comparisons, swaps, sparseFound);
+        return cleanArray;
+    }
 
     return {
         bubbleSort,
